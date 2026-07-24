@@ -1,0 +1,692 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#10141f;
+    --bg-elevated:#161c2c;
+    --surface:#1c2436;
+    --surface-hover:#252e46;
+    --border:#2b3348;
+    --border-soft:#232b40;
+    --text:#eef1f8;
+    --text-muted:#8e97b0;
+    --text-dim:#5f6883;
+    --gold:#e8a33d;
+    --gold-soft:rgba(232,163,61,0.14);
+    --teal:#4fb28f;
+    --teal-soft:rgba(79,178,143,0.14);
+    --blue:#6f9ceb;
+    --blue-soft:rgba(111,156,235,0.14);
+    --rose:#e1637a;
+    --rose-soft:rgba(225,99,122,0.14);
+    --radius:14px;
+    --font-body:'Hind Siliguri','Noto Sans Bengali',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  .rp-root{
+    font-family:var(--font-body);
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:0;
+    line-height:1.5;
+  }
+  .rp-wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+  }
+
+  /* ---- header / signature ---- */
+  .rp-header{
+    margin-bottom:22px;
+  }
+  .rp-eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  .rp-title{
+    font-size:26px;
+    font-weight:700;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .rp-sub{
+    color:var(--text-muted);
+    font-size:14px;
+    margin:0;
+  }
+
+  .rp-arc{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:20px 0 24px;
+    padding:14px 16px;
+    background:linear-gradient(90deg, rgba(232,163,61,0.10), rgba(79,178,143,0.10));
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius);
+  }
+  .rp-arc svg{flex-shrink:0;}
+  .rp-arc-text{font-size:13px;color:var(--text-muted);}
+  .rp-arc-text b{color:var(--text);font-weight:600;}
+
+  /* ---- tabs ---- */
+  .rp-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:20px;
+    border-bottom:1px solid var(--border);
+    overflow-x:auto;
+  }
+  .rp-tab{
+    font-family:var(--font-body);
+    background:none;
+    border:none;
+    color:var(--text-muted);
+    font-size:14px;
+    font-weight:600;
+    padding:10px 14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+    transition:color .15s;
+  }
+  .rp-tab:hover{color:var(--text);}
+  .rp-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+  .rp-view{display:none;}
+  .rp-view.active{display:block;animation:fadeIn .2s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---- cards ---- */
+  .rp-card{
+    background:var(--surface);
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .rp-card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:10px;
+  }
+  .rp-card-title{font-size:15px;font-weight:600;}
+  .rp-date-mono{font-family:var(--font-mono);font-size:12px;color:var(--text-dim);}
+
+  /* progress */
+  .rp-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .rp-progress-bar{flex:1;height:8px;background:var(--bg-elevated);border-radius:6px;overflow:hidden;}
+  .rp-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--teal));border-radius:6px;transition:width .3s;}
+  .rp-progress-num{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);white-space:nowrap;}
+
+  /* task list */
+  .rp-task-group{margin-bottom:14px;}
+  .rp-task-group-label{
+    font-size:11px;font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-dim);margin-bottom:6px;
+  }
+  .rp-task{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:9px 10px;border-radius:10px;
+    background:var(--bg-elevated);
+    margin-bottom:6px;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .rp-task:hover{border-color:var(--border);}
+  .rp-task input[type=checkbox]{
+    margin-top:2px;width:17px;height:17px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;
+  }
+  .rp-task-text{flex:1;font-size:14px;}
+  .rp-task.done .rp-task-text{color:var(--text-dim);text-decoration:line-through;}
+  .rp-badge{
+    font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;
+    align-self:center;
+  }
+  .rp-badge.fixed{background:var(--blue-soft);color:var(--blue);}
+  .rp-badge.flex{background:var(--teal-soft);color:var(--teal);}
+  .rp-badge.priority{background:var(--gold-soft);color:var(--gold);}
+  .rp-task-del{
+    background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;
+  }
+  .rp-task-del:hover{color:var(--rose);}
+  .rp-empty{color:var(--text-dim);font-size:13px;padding:14px 4px;text-align:center;}
+
+  /* forms */
+  .rp-add-row{display:flex;gap:8px;margin-top:8px;}
+  .rp-input, .rp-select{
+    font-family:var(--font-body);
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:9px;
+    padding:9px 10px;
+    font-size:14px;
+  }
+  .rp-input{flex:1;}
+  .rp-input:focus, .rp-select:focus{outline:none;border-color:var(--gold);}
+  .rp-btn{
+    font-family:var(--font-body);
+    background:var(--gold);
+    color:#1a1305;
+    border:none;
+    border-radius:9px;
+    padding:9px 16px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .rp-btn:hover{background:#f0b25c;}
+  .rp-btn.secondary{
+    background:var(--surface-hover);color:var(--text);border:1px solid var(--border);
+  }
+  .rp-btn.secondary:hover{background:var(--border);}
+  .rp-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .rp-cat-select{display:flex;gap:6px;margin-top:10px;}
+  .rp-cat-opt{
+    flex:1;text-align:center;padding:8px 4px;border-radius:9px;border:1px solid var(--border);
+    font-size:12px;font-family:var(--font-mono);cursor:pointer;color:var(--text-muted);
+  }
+  .rp-cat-opt.sel-fixed.on{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);}
+  .rp-cat-opt.sel-flex.on{background:var(--teal-soft);border-color:var(--teal);color:var(--teal);}
+  .rp-cat-opt.sel-priority.on{background:var(--gold-soft);border-color:var(--gold);color:var(--gold);}
+
+  .rp-chip-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+  .rp-chip{
+    font-size:12.5px;padding:7px 12px;border-radius:20px;border:1px solid var(--border);
+    background:var(--bg-elevated);color:var(--text-muted);cursor:pointer;
+  }
+  .rp-chip:hover{border-color:var(--gold);color:var(--text);}
+
+  /* history */
+  .rp-hist-item{
+    background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:10px;cursor:pointer;
+  }
+  .rp-hist-top{display:flex;justify-content:space-between;align-items:center;}
+  .rp-hist-date{font-family:var(--font-mono);font-size:13px;color:var(--text);}
+  .rp-hist-stat{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);}
+  .rp-hist-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-soft);}
+  .rp-hist-item.open .rp-hist-detail{display:block;}
+  .rp-hist-task{font-size:13px;padding:4px 0;color:var(--text-muted);display:flex;gap:8px;align-items:center;}
+  .rp-hist-task .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .rp-hist-task.ok .dot{background:var(--teal);}
+  .rp-hist-task.miss .dot{background:var(--rose);}
+  .rp-hist-task.ok{color:var(--text);}
+
+  /* topics */
+  .rp-topic-card{
+    background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:10px;
+  }
+  .rp-topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .rp-topic-name{font-size:14.5px;font-weight:600;}
+  .rp-topic-cat{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-top:2px;}
+  .rp-status-select{
+    font-family:var(--font-mono);font-size:11px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);
+    background:var(--bg-elevated);color:var(--text);cursor:pointer;
+  }
+  .rp-status-select.st-notstarted{color:var(--text-muted);}
+  .rp-status-select.st-inprogress{color:var(--gold);border-color:var(--gold);}
+  .rp-status-select.st-cleared{color:var(--teal);border-color:var(--teal);}
+  .rp-topic-note{
+    width:100%;font-family:var(--font-body);background:var(--bg-elevated);border:1px solid var(--border);
+    color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;resize:vertical;min-height:34px;
+  }
+  .rp-topic-meta{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);margin-top:6px;}
+  .rp-topic-del{float:right;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:13px;}
+  .rp-topic-del:hover{color:var(--rose);}
+
+  .rp-add-topic-form{display:flex;flex-wrap:wrap;gap:8px;}
+  .rp-add-topic-form .rp-input{min-width:140px;}
+
+  .rp-loading{color:var(--text-dim);font-size:13px;text-align:center;padding:30px;}
+  .rp-section-title{font-size:13px;font-weight:600;color:var(--text-muted);margin:18px 0 8px;font-family:var(--font-mono);letter-spacing:.04em;}
+</style>
+
+<div class="rp-root">
+  <div class="rp-wrap">
+    <div class="rp-header">
+      <div class="rp-eyebrow">রেগুলারিটি ট্র্যাকার</div>
+      <h1 class="rp-title">নিজেকে নিয়মে রাখার জায়গা</h1>
+      <p class="rp-sub">রাতে কাল-এর প্ল্যান লিখো, দিনে টিক দাও, পরে ফিরে দেখো — বিষয়ভিত্তিক অগ্রগতি সহ।</p>
+    </div>
+
+    <div class="rp-arc">
+      <svg width="34" height="20" viewBox="0 0 34 20" fill="none">
+        <circle cx="7" cy="10" r="6" fill="#e8a33d" opacity="0.85"/>
+        <path d="M16 10 L26 10 M22 5 L27 10 L22 15" stroke="#5f6883" stroke-width="1.4" fill="none"/>
+        <circle cx="27" cy="10" r="5.5" fill="none" stroke="#4fb28f" stroke-width="1.6"/>
+        <circle cx="27" cy="10" r="2.2" fill="#4fb28f"/>
+      </svg>
+      <div class="rp-arc-text">আজ রাত-এর প্ল্যান আগামীকালের <b>নিয়ম</b> হয়ে ওঠে।</div>
+    </div>
+
+    <div class="rp-tabs">
+      <button class="rp-tab active" data-view="today">আজ</button>
+      <button class="rp-tab" data-view="plan">কাল প্ল্যান</button>
+      <button class="rp-tab" data-view="history">ইতিহাস</button>
+      <button class="rp-tab" data-view="topics">বিষয় অগ্রগতি</button>
+    </div>
+
+    <div id="view-today" class="rp-view active"><div class="rp-loading">লোড হচ্ছে…</div></div>
+    <div id="view-plan" class="rp-view"><div class="rp-loading">লোড হচ্ছে…</div></div>
+    <div id="view-history" class="rp-view"><div class="rp-loading">লোড হচ্ছে…</div></div>
+    <div id="view-topics" class="rp-view"><div class="rp-loading">লোড হচ্ছে…</div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const RECURRING = [
+    {text:"CIS রিসার্চ ক্লাব অ্যাক্টিভিটি", cat:"flex"},
+    {text:"সাইবারসিকিউরিটি ক্লাব অ্যাক্টিভিটি", cat:"flex"},
+    {text:"ইউটিউব ভিডিও এডিট/আপলোড + ফেসবুক পোস্ট", cat:"flex"},
+    {text:"নেটওয়ার্কিং + সাইবারসিকিউরিটি প্র্যাকটিস (২ ঘণ্টা)", cat:"fixed"},
+    {text:"পাইথন ক্লাস + প্র্যাকটিস (১.৫ ঘণ্টা)", cat:"fixed"},
+    {text:"একাডেমিক পড়া (২ ঘণ্টা)", cat:"fixed"},
+    {text:"টিউশন (রবি/সোম/বুধ, সকাল ৬:৩০–৮:৩০)", cat:"fixed"},
+  ];
+  const CAT_LABEL = {fixed:"ফিক্সড", flex:"ফ্লেক্সিবল", priority:"অগ্রাধিকার"};
+  const STATUS_LABEL = {notstarted:"শুরু হয়নি", inprogress:"চলছে", cleared:"ক্লিয়ার"};
+
+  function pad(n){return n<10?'0'+n:n;}
+  function fmt(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function todayDate(){return new Date();}
+  function addDays(d,n){const x=new Date(d); x.setDate(x.getDate()+n); return x;}
+  const BN_DAYS = ["রবি","সোম","মঙ্গল","বুধ","বৃহস্পতি","শুক্র","শনি"];
+  const BN_MONTHS = ["জানু","ফেব্রু","মার্চ","এপ্রি","মে","জুন","জুলাই","আগ","সেপ্ট","অক্টো","নভে","ডিসে"];
+  function prettyDate(dateStr){
+    const [y,m,d] = dateStr.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    return BN_DAYS[dt.getDay()]+', '+d+' '+BN_MONTHS[m-1];
+  }
+
+  const todayKey = fmt(todayDate());
+  const tomorrowKey = fmt(addDays(todayDate(),1));
+
+  let state = {
+    dates: [],           // all date keys we have data for
+    days: {},            // dateKey -> {tasks:[{id,text,cat,done}]}
+    subjects: [],        // {id,name,cat,status,note,updated}
+  };
+
+  async function safeGet(key){
+    try{
+      const r = await window.storage.get(key, false);
+      return r ? r.value : null;
+    }catch(e){ return null; }
+  }
+  async function safeSet(key, value){
+    try{ await window.storage.set(key, value, false); }catch(e){ console.error('storage set failed', key, e); }
+  }
+
+  async function loadAll(){
+    const datesRaw = await safeGet('meta:dates');
+    state.dates = datesRaw ? JSON.parse(datesRaw) : [];
+    const subjRaw = await safeGet('meta:subjects');
+    state.subjects = subjRaw ? JSON.parse(subjRaw) : [];
+
+    // ensure today & tomorrow exist in memory (load if present)
+    const keysToLoad = new Set(state.dates);
+    keysToLoad.add(todayKey);
+    for(const k of keysToLoad){
+      const raw = await safeGet('day:'+k);
+      state.days[k] = raw ? JSON.parse(raw) : {tasks:[]};
+    }
+    if(!state.dates.includes(todayKey)){
+      // don't persist yet, just keep in memory until a task is added
+    }
+  }
+
+  async function persistDay(dateKey){
+    await safeSet('day:'+dateKey, JSON.stringify(state.days[dateKey] || {tasks:[]}));
+    if(!state.dates.includes(dateKey)){
+      state.dates.push(dateKey);
+      state.dates.sort();
+      await safeSet('meta:dates', JSON.stringify(state.dates));
+    }
+  }
+
+  async function persistSubjects(){
+    await safeSet('meta:subjects', JSON.stringify(state.subjects));
+  }
+
+  function ensureDay(dateKey){
+    if(!state.days[dateKey]) state.days[dateKey] = {tasks:[]};
+    return state.days[dateKey];
+  }
+
+  function uid(){ return Math.random().toString(36).slice(2,9); }
+
+  // ---------- TODAY VIEW ----------
+  function renderToday(){
+    const day = ensureDay(todayKey);
+    const total = day.tasks.length;
+    const done = day.tasks.filter(t=>t.done).length;
+    const pct = total ? Math.round(done/total*100) : 0;
+
+    const groups = {priority:[], fixed:[], flex:[]};
+    day.tasks.forEach(t=>groups[t.cat||'flex'].push(t));
+
+    let html = `
+      <div class="rp-card">
+        <div class="rp-card-head">
+          <div class="rp-card-title">আজকের কাজ</div>
+          <div class="rp-date-mono">${prettyDate(todayKey)}</div>
+        </div>
+        <div class="rp-progress-row">
+          <div class="rp-progress-bar"><div class="rp-progress-fill" style="width:${pct}%"></div></div>
+          <div class="rp-progress-num">${done}/${total}</div>
+        </div>
+    `;
+
+    if(total === 0){
+      html += `<div class="rp-empty">আজকের জন্য কিছু প্ল্যান করা নেই। গতরাতে প্ল্যান না করলে, এখনই নিচে থেকে যোগ করো।</div>`;
+    } else {
+      ['priority','fixed','flex'].forEach(cat=>{
+        if(groups[cat].length===0) return;
+        html += `<div class="rp-task-group"><div class="rp-task-group-label">${CAT_LABEL[cat]}</div>`;
+        groups[cat].forEach(t=>{
+          html += `
+            <div class="rp-task ${t.done?'done':''}" data-id="${t.id}" data-action="toggle">
+              <input type="checkbox" ${t.done?'checked':''} data-id="${t.id}" data-action="toggle-cb"/>
+              <div class="rp-task-text">${escapeHtml(t.text)}</div>
+              <button class="rp-task-del" data-id="${t.id}" data-action="del-today">✕</button>
+            </div>`;
+        });
+        html += `</div>`;
+      });
+    }
+
+    html += `
+        <div class="rp-add-row">
+          <input class="rp-input" id="today-add-input" placeholder="আজকের জন্য নতুন কাজ যোগ করো…" />
+          <button class="rp-btn" id="today-add-btn">যোগ করো</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('view-today').innerHTML = html;
+
+    document.querySelectorAll('#view-today [data-action="toggle-cb"]').forEach(cb=>{
+      cb.addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        const id = cb.getAttribute('data-id');
+        const t = day.tasks.find(x=>x.id===id);
+        if(t){ t.done = cb.checked; await persistDay(todayKey); renderToday(); }
+      });
+    });
+    document.querySelectorAll('#view-today [data-action="del-today"]').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        day.tasks = day.tasks.filter(x=>x.id!==id);
+        await persistDay(todayKey); renderToday();
+      });
+    });
+    document.getElementById('today-add-btn').addEventListener('click', addTodayTask);
+    document.getElementById('today-add-input').addEventListener('keydown', (e)=>{
+      if(e.key==='Enter') addTodayTask();
+    });
+  }
+
+  async function addTodayTask(){
+    const input = document.getElementById('today-add-input');
+    const val = input.value.trim();
+    if(!val) return;
+    const day = ensureDay(todayKey);
+    day.tasks.push({id:uid(), text:val, cat:'flex', done:false});
+    await persistDay(todayKey);
+    renderToday();
+  }
+
+  // ---------- PLAN TOMORROW VIEW ----------
+  let planSelectedCat = 'flex';
+
+  function renderPlan(){
+    const day = ensureDay(tomorrowKey);
+    let html = `
+      <div class="rp-card">
+        <div class="rp-card-head">
+          <div class="rp-card-title">আগামীকালের প্ল্যান</div>
+          <div class="rp-date-mono">${prettyDate(tomorrowKey)}</div>
+        </div>
+        <div class="rp-section-title" style="margin-top:0;">এক ক্লিকে যোগ করো (নিয়মিত কাজ)</div>
+        <div class="rp-chip-wrap">
+          ${RECURRING.map((r,i)=>`<div class="rp-chip" data-idx="${i}">${escapeHtml(r.text)}</div>`).join('')}
+        </div>
+        <div class="rp-section-title">নিজের মতো যোগ করো</div>
+        <div class="rp-cat-select">
+          <div class="rp-cat-opt sel-priority ${planSelectedCat==='priority'?'on':''}" data-cat="priority">অগ্রাধিকার</div>
+          <div class="rp-cat-opt sel-fixed ${planSelectedCat==='fixed'?'on':''}" data-cat="fixed">ফিক্সড</div>
+          <div class="rp-cat-opt sel-flex ${planSelectedCat==='flex'?'on':''}" data-cat="flex">ফ্লেক্সিবল</div>
+        </div>
+        <div class="rp-add-row">
+          <input class="rp-input" id="plan-add-input" placeholder="কালকের জন্য কাজ লেখো…" />
+          <button class="rp-btn" id="plan-add-btn">যোগ করো</button>
+        </div>
+      </div>
+
+      <div class="rp-card">
+        <div class="rp-card-title" style="margin-bottom:10px;">কাল যা যা করবে</div>
+    `;
+
+    if(day.tasks.length===0){
+      html += `<div class="rp-empty">এখনো কিছু যোগ করনি। উপর থেকে চিপ ক্লিক করে বা নিজে লিখে শুরু করো।</div>`;
+    } else {
+      const groups = {priority:[], fixed:[], flex:[]};
+      day.tasks.forEach(t=>groups[t.cat||'flex'].push(t));
+      ['priority','fixed','flex'].forEach(cat=>{
+        if(groups[cat].length===0) return;
+        html += `<div class="rp-task-group"><div class="rp-task-group-label">${CAT_LABEL[cat]}</div>`;
+        groups[cat].forEach(t=>{
+          html += `
+            <div class="rp-task">
+              <div class="rp-task-text">${escapeHtml(t.text)}</div>
+              <span class="rp-badge ${t.cat}">${CAT_LABEL[t.cat]}</span>
+              <button class="rp-task-del" data-id="${t.id}" data-action="del-plan">✕</button>
+            </div>`;
+        });
+        html += `</div>`;
+      });
+    }
+    html += `</div>`;
+
+    document.getElementById('view-plan').innerHTML = html;
+
+    document.querySelectorAll('#view-plan .rp-chip').forEach(chip=>{
+      chip.addEventListener('click', async ()=>{
+        const idx = Number(chip.getAttribute('data-idx'));
+        const r = RECURRING[idx];
+        day.tasks.push({id:uid(), text:r.text, cat:r.cat, done:false});
+        await persistDay(tomorrowKey);
+        renderPlan();
+      });
+    });
+    document.querySelectorAll('#view-plan .rp-cat-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        planSelectedCat = opt.getAttribute('data-cat');
+        renderPlan();
+      });
+    });
+    document.querySelectorAll('#view-plan [data-action="del-plan"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.getAttribute('data-id');
+        day.tasks = day.tasks.filter(x=>x.id!==id);
+        await persistDay(tomorrowKey);
+        renderPlan();
+      });
+    });
+    document.getElementById('plan-add-btn').addEventListener('click', addPlanTask);
+    document.getElementById('plan-add-input').addEventListener('keydown', (e)=>{
+      if(e.key==='Enter') addPlanTask();
+    });
+  }
+
+  async function addPlanTask(){
+    const input = document.getElementById('plan-add-input');
+    const val = input.value.trim();
+    if(!val) return;
+    const day = ensureDay(tomorrowKey);
+    day.tasks.push({id:uid(), text:val, cat:planSelectedCat, done:false});
+    await persistDay(tomorrowKey);
+    renderPlan();
+  }
+
+  // ---------- HISTORY VIEW ----------
+  async function renderHistory(){
+    const pastDates = state.dates.filter(d=>d < todayKey).sort().reverse();
+    let html = '';
+    if(pastDates.length===0){
+      html = `<div class="rp-card"><div class="rp-empty">এখনো কোনো পুরনো দিনের ডেটা নেই। কাল থেকে দেখা শুরু হবে।</div></div>`;
+    } else {
+      for(const dateKey of pastDates){
+        if(!state.days[dateKey]){
+          const raw = await safeGet('day:'+dateKey);
+          state.days[dateKey] = raw ? JSON.parse(raw) : {tasks:[]};
+        }
+        const day = state.days[dateKey];
+        const total = day.tasks.length;
+        const done = day.tasks.filter(t=>t.done).length;
+        html += `
+          <div class="rp-hist-item" data-date="${dateKey}">
+            <div class="rp-hist-top">
+              <div class="rp-hist-date">${prettyDate(dateKey)}</div>
+              <div class="rp-hist-stat">${done}/${total} সম্পন্ন</div>
+            </div>
+            <div class="rp-hist-detail">
+              ${total===0 ? '<div class="rp-empty">কোনো কাজ প্ল্যান করা ছিল না।</div>' :
+                day.tasks.map(t=>`
+                  <div class="rp-hist-task ${t.done?'ok':'miss'}">
+                    <span class="dot"></span>${escapeHtml(t.text)}
+                  </div>`).join('')
+              }
+            </div>
+          </div>`;
+      }
+    }
+    document.getElementById('view-history').innerHTML = html;
+    document.querySelectorAll('#view-history .rp-hist-item').forEach(item=>{
+      item.addEventListener('click', ()=>item.classList.toggle('open'));
+    });
+  }
+
+  // ---------- TOPICS VIEW ----------
+  function renderTopics(){
+    let html = `
+      <div class="rp-card">
+        <div class="rp-card-title" style="margin-bottom:10px;">নতুন বিষয় যোগ করো</div>
+        <div class="rp-add-topic-form">
+          <input class="rp-input" id="topic-name-input" placeholder="বিষয়ের নাম (যেমন: Subnetting)" />
+          <input class="rp-input" id="topic-cat-input" placeholder="ক্যাটাগরি (যেমন: Networking)" style="max-width:160px;"/>
+          <button class="rp-btn" id="topic-add-btn">যোগ করো</button>
+        </div>
+      </div>
+    `;
+
+    if(state.subjects.length===0){
+      html += `<div class="rp-card"><div class="rp-empty">এখনো কোনো বিষয় যোগ করনি।</div></div>`;
+    } else {
+      const byCat = {};
+      state.subjects.forEach(s=>{
+        const c = s.cat || 'অন্যান্য';
+        if(!byCat[c]) byCat[c]=[];
+        byCat[c].push(s);
+      });
+      Object.keys(byCat).forEach(cat=>{
+        html += `<div class="rp-section-title">${escapeHtml(cat)}</div>`;
+        byCat[cat].forEach(s=>{
+          html += `
+            <div class="rp-topic-card" data-id="${s.id}">
+              <button class="rp-topic-del" data-id="${s.id}" data-action="del-topic">মুছে দাও</button>
+              <div class="rp-topic-top">
+                <div>
+                  <div class="rp-topic-name">${escapeHtml(s.name)}</div>
+                </div>
+                <select class="rp-status-select st-${s.status}" data-id="${s.id}" data-action="status-topic">
+                  <option value="notstarted" ${s.status==='notstarted'?'selected':''}>শুরু হয়নি</option>
+                  <option value="inprogress" ${s.status==='inprogress'?'selected':''}>চলছে</option>
+                  <option value="cleared" ${s.status==='cleared'?'selected':''}>ক্লিয়ার</option>
+                </select>
+              </div>
+              <textarea class="rp-topic-note" data-id="${s.id}" data-action="note-topic" placeholder="কতদূর পড়েছো / কোথায় আটকে আছো, ছোট নোট লেখো…">${escapeHtml(s.note||'')}</textarea>
+              <div class="rp-topic-meta">শেষ আপডেট: ${s.updated ? prettyDate(s.updated) : '—'}</div>
+            </div>`;
+        });
+      });
+    }
+
+    document.getElementById('view-topics').innerHTML = html;
+
+    document.getElementById('topic-add-btn').addEventListener('click', addTopic);
+    document.querySelectorAll('#view-topics [data-action="status-topic"]').forEach(sel=>{
+      sel.addEventListener('change', async ()=>{
+        const id = sel.getAttribute('data-id');
+        const s = state.subjects.find(x=>x.id===id);
+        if(s){ s.status = sel.value; s.updated = todayKey; await persistSubjects(); renderTopics(); }
+      });
+    });
+    document.querySelectorAll('#view-topics [data-action="note-topic"]').forEach(ta=>{
+      ta.addEventListener('blur', async ()=>{
+        const id = ta.getAttribute('data-id');
+        const s = state.subjects.find(x=>x.id===id);
+        if(s){ s.note = ta.value; s.updated = todayKey; await persistSubjects(); }
+      });
+    });
+    document.querySelectorAll('#view-topics [data-action="del-topic"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.getAttribute('data-id');
+        state.subjects = state.subjects.filter(x=>x.id!==id);
+        await persistSubjects();
+        renderTopics();
+      });
+    });
+  }
+
+  async function addTopic(){
+    const nameInput = document.getElementById('topic-name-input');
+    const catInput = document.getElementById('topic-cat-input');
+    const name = nameInput.value.trim();
+    const cat = catInput.value.trim() || 'অন্যান্য';
+    if(!name) return;
+    state.subjects.push({id:uid(), name, cat, status:'notstarted', note:'', updated: todayKey});
+    await persistSubjects();
+    nameInput.value=''; catInput.value='';
+    renderTopics();
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- TABS ----------
+  document.querySelectorAll('.rp-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.rp-view').forEach(v=>v.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('view-'+tab.getAttribute('data-view')).classList.add('active');
+    });
+  });
+
+  // ---------- INIT ----------
+  (async function init(){
+    await loadAll();
+    renderToday();
+    renderPlan();
+    renderHistory();
+    renderTopics();
+  })();
+})();
+</script>
