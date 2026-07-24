@@ -1,166 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tracker App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pro Tracker</title>
 
 <style>
-body {
-  margin:0;
-  font-family:sans-serif;
-  background:#10141f;
-  color:white;
-}
-
-.container {
-  max-width:500px;
-  margin:auto;
-  padding:15px;
-}
-
-input {
-  width:70%;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-}
-
-button {
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  margin-left:5px;
-  cursor:pointer;
-}
-
-.save { background:#28a745; color:white; }
-.delete { background:red; color:white; }
-.restore { background:orange; color:white; }
-
-.item {
-  background:#1c2436;
-  padding:10px;
-  margin-top:10px;
-  border-radius:8px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.section-title {
-  margin-top:20px;
-  font-weight:bold;
-}
+body{font-family:sans-serif;background:#10141f;color:white;margin:0}
+.container{max-width:700px;margin:auto;padding:15px}
+.tabs button{margin:5px;padding:10px;border:none;border-radius:8px}
+.active{background:gold;color:black}
+.item{background:#1c2436;margin-top:10px;padding:10px;border-radius:8px;display:flex;justify-content:space-between}
+button{cursor:pointer}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-<h2>Tracker</h2>
+<h2>📊 Pro Tracker</h2>
 
-<input type="text" id="inputBox" placeholder="Write something...">
-<button class="save" onclick="addItem()">Save</button>
+<div class="tabs">
+<button onclick="tab('today')" id="btoday">Today</button>
+<button onclick="tab('plan')" id="bplan">Tomorrow</button>
+<button onclick="tab('history')" id="bhistory">History</button>
+<button onclick="tab('subjects')" id="bsubjects">Subjects</button>
+<button onclick="tab('trash')" id="btrash">Recycle</button>
+</div>
 
-<div id="list"></div>
-
-<div class="section-title">🗑 Recycle Bin</div>
+<div id="today"></div>
+<div id="plan"></div>
+<div id="history"></div>
+<div id="subjects"></div>
 <div id="trash"></div>
 
 </div>
 
 <script>
 
-// LOAD DATA
-let data = JSON.parse(localStorage.getItem("data")) || [];
-let trash = JSON.parse(localStorage.getItem("trash")) || [];
+// DB
+let db = JSON.parse(localStorage.getItem("proDB")) || {
+today:[],
+plan:[],
+history:[],
+subjects:[],
+trash:[]
+};
 
-// SAVE STORAGE
-function updateStorage() {
-  localStorage.setItem("data", JSON.stringify(data));
-  localStorage.setItem("trash", JSON.stringify(trash));
+// SAVE
+function save(){localStorage.setItem("proDB",JSON.stringify(db));}
+
+// ADD TASK
+function add(type){
+let t=prompt("Task?");
+if(!t)return;
+db[type].push({text:t,done:false});
+save();render();
 }
 
-// ADD ITEM
-function addItem() {
-  let input = document.getElementById("inputBox");
-  let text = input.value.trim();
-
-  if(text === "") return;
-
-  data.push(text);
-  input.value = "";
-
-  updateStorage();
-  render();
+// DELETE → TRASH
+function del(type,i){
+if(confirm("Delete?")){
+db.trash.push(db[type][i]);
+db[type].splice(i,1);
+save();render();
+}
 }
 
-// DELETE (MOVE TO TRASH)
-function deleteItem(index) {
-  if(confirm("Are you sure to delete?")) {
-    trash.push(data[index]);
-    data.splice(index,1);
-
-    updateStorage();
-    render();
-  }
+// DONE
+function done(i){
+db.today[i].done=!db.today[i].done;
+save();render();
 }
 
-// RESTORE
-function restoreItem(index) {
-  data.push(trash[index]);
-  trash.splice(index,1);
+// MOVE PLAN → TODAY (daily)
+function autoMove(){
+if(localStorage.getItem("lastDate")!=new Date().toDateString()){
+db.history.push({date:new Date().toDateString(),tasks:[...db.today]});
+db.today=db.plan;
+db.plan=[];
+localStorage.setItem("lastDate",new Date().toDateString());
+save();
+}
+}
 
-  updateStorage();
-  render();
+// SUBJECT ADD
+function addSub(){
+let n=prompt("Subject name?");
+if(!n)return;
+db.subjects.push({name:n,status:"not",note:""});
+save();render();
+}
+
+// SUBJECT STATUS
+function subStatus(i){
+let s=prompt("Status: not / doing / done");
+db.subjects[i].status=s;
+save();render();
+}
+
+// TRASH RESTORE
+function restore(i){
+db.today.push(db.trash[i]);
+db.trash.splice(i,1);
+save();render();
 }
 
 // PERMANENT DELETE
-function permanentDelete(index) {
-  if(confirm("Delete permanently?")) {
-    trash.splice(index,1);
-
-    updateStorage();
-    render();
-  }
+function perma(i){
+if(confirm("Permanent delete?")){
+db.trash.splice(i,1);
+save();render();
+}
 }
 
-// RENDER UI
-function render() {
-
-  let list = document.getElementById("list");
-  let trashDiv = document.getElementById("trash");
-
-  list.innerHTML = "";
-  trashDiv.innerHTML = "";
-
-  data.forEach((item,index)=>{
-    list.innerHTML += `
-      <div class="item">
-        ${item}
-        <button class="delete" onclick="deleteItem(${index})">Delete</button>
-      </div>
-    `;
-  });
-
-  trash.forEach((item,index)=>{
-    trashDiv.innerHTML += `
-      <div class="item">
-        ${item}
-        <div>
-          <button class="restore" onclick="restoreItem(${index})">Restore</button>
-          <button class="delete" onclick="permanentDelete(${index})">X</button>
-        </div>
-      </div>
-    `;
-  });
+// TAB
+function tab(t){
+["today","plan","history","subjects","trash"].forEach(x=>{
+document.getElementById(x).style.display="none";
+document.getElementById("b"+x).classList.remove("active");
+});
+document.getElementById(t).style.display="block";
+document.getElementById("b"+t).classList.add("active");
 }
 
-// FIRST LOAD
+// RENDER
+function render(){
+
+document.getElementById("today").innerHTML=
+`<h3>Today</h3>
+<button onclick="add('today')">Add</button>
+${db.today.map((t,i)=>`
+<div class="item">
+<span onclick="done(${i})">${t.done?"✅":"⬜"} ${t.text}</span>
+<button onclick="del('today',${i})">X</button>
+</div>`).join("")}`;
+
+document.getElementById("plan").innerHTML=
+`<h3>Tomorrow</h3>
+<button onclick="add('plan')">Add</button>
+${db.plan.map((t,i)=>`
+<div class="item">
+${t.text}
+<button onclick="del('plan',${i})">X</button>
+</div>`).join("")}`;
+
+document.getElementById("history").innerHTML=
+`<h3>History</h3>
+${db.history.map(h=>`
+<div class="item">${h.date} (${h.tasks.length} tasks)</div>
+`).join("")}`;
+
+document.getElementById("subjects").innerHTML=
+`<h3>Subjects</h3>
+<button onclick="addSub()">Add Subject</button>
+${db.subjects.map((s,i)=>`
+<div class="item">
+${s.name} - ${s.status}
+<button onclick="subStatus(${i})">Edit</button>
+</div>`).join("")}`;
+
+document.getElementById("trash").innerHTML=
+`<h3>Recycle</h3>
+${db.trash.map((t,i)=>`
+<div class="item">
+${t.text}
+<div>
+<button onclick="restore(${i})">Restore</button>
+<button onclick="perma(${i})">Delete</button>
+</div>
+</div>`).join("")}`;
+
+}
+
+// INIT
+autoMove();
 render();
+tab("today");
 
 </script>
-
 </body>
 </html>
